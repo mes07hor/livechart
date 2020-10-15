@@ -14,6 +14,8 @@ namespace livechart
     {
         public SplashForm()
         {
+
+            //git test
             InitializeComponent();
         }
 
