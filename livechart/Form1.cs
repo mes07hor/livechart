@@ -38,9 +38,7 @@ namespace livechart
             var ListOfTimeforCulumn1 = new List<List<double>>() { };
             var ListOfTimeforCulumn2 = new List<List<double>>() { };
             selectedgroup = this.firstformInstance.selectedTable;
-
-            
-
+            Console.WriteLine(selectedgroup);
 
         }
 
@@ -137,110 +135,160 @@ namespace livechart
         {
             SeriesCollection columnseries = new SeriesCollection();
 
-
             DateTime now = DateTime.Now;
+            ColumnSeries column = new ColumnSeries()
+            {
+                Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
+
+                DataLabels = false,
+                Values = new ChartValues<double>(),
+                //LabelPoint = point => point.Y.ToString()
+
+            };
+            ColumnSeries column2 = new ColumnSeries()
+            {
+                Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～" + now.ToShortTimeString(),
+
+                DataLabels = false,
+                Values = new ChartValues<double>(),
+                //LabelPoint = point => point.Y.ToString()
+
+            };
+
             using (WorkshopEntities7 db = new WorkshopEntities7())
             {
-                
-                var data = db.Adults;
-               
-
-                var users = (from o in data orderby o.username select o.username).Distinct();
-
-                //SeriesCollection lineseries = new SeriesCollection();
-
-                ColumnSeries column = new ColumnSeries()
+                if (selectedgroup == "Adults")
                 {
-                    Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
+                    var data = db.Adults;
+                    var users = (from o in data orderby o.username select o.username).Distinct();
+                    //SeriesCollection lineseries = new SeriesCollection();
 
-                    DataLabels = false,
-                    Values = new ChartValues<double>(),
-                    //LabelPoint = point => point.Y.ToString()
-
-                };
-                ColumnSeries column2 = new ColumnSeries()
-                {
-                    Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～" + now.ToShortTimeString(),
-
-                    DataLabels = false,
-                    Values = new ChartValues<double>(),
-                    //LabelPoint = point => point.Y.ToString()
-
-                };
-                
-
-                foreach (var user in users)
-                {
-                    LineSeries line = new LineSeries()
+                    foreach (var user in users)
                     {
-                        Title = user.ToString(),
-                        DataLabels = false,
-                        Values = new ChartValues<double>(),
-                        //Values=userdatas.AsChartValues()
-                    };
-
-
-                    //double totalseconds1 = 5;
-                    //double totalseconds2 = 5;
-                    
-
-                    var timesForCulumn1 = new List<double>();
-                    var timesForCulumn2 = new List<double>();
-
-
-                    for (DateTime itime = now.AddMinutes(-chartRangeMinute); itime < now; itime = itime.AddMinutes(1))
-                    {
-                        double vv = 0;
-                        //var ruleDate = Convert.ToDateTime(itime).TimeOfDay;
-
-
-                        var userdatas = from oo in data
-                                        where SqlFunctions.DatePart("minute", oo.Date) == SqlFunctions.DatePart("minute", itime)
-                                        && oo.username.Equals(user)
-                                        && SqlFunctions.DatePart("hour", oo.Date) == SqlFunctions.DatePart("hour", itime)
-                                        && oo.time < 60
-                                        select oo.time;
-
-                        Console.WriteLine(itime.ToShortTimeString());
-
-
-                        if (userdatas.FirstOrDefault() != null)
+                        LineSeries line = new LineSeries()
                         {
-                            vv = (double)userdatas.FirstOrDefault();
+                            Title = user.ToString(),
+                            DataLabels = false,
+                            Values = new ChartValues<double>(),
+                            //Values=userdatas.AsChartValues()
+                        };
+                        //double totalseconds1 = 5;
+                        //double totalseconds2 = 5;
+                        var timesForCulumn1 = new List<double>();
+                        var timesForCulumn2 = new List<double>();
 
-                        }
-                        line.Values.Add(vv);
-
-                        if (itime.TimeOfDay < now.AddMinutes(-chartRangeMinute / 2).TimeOfDay)
+                        for (DateTime itime = now.AddMinutes(-chartRangeMinute); itime < now; itime = itime.AddMinutes(1))
                         {
-                            //totalseconds1 = totalseconds1 + vv;
-                            timesForCulumn1.Add(vv);
+                            double vv = 0;
+                            //var ruleDate = Convert.ToDateTime(itime).TimeOfDay;
 
+                            var userdatas = from oo in data
+                                            where SqlFunctions.DatePart("minute", oo.Date) == SqlFunctions.DatePart("minute", itime)
+                                            && oo.username.Equals(user)
+                                            && SqlFunctions.DatePart("hour", oo.Date) == SqlFunctions.DatePart("hour", itime)
+                                            && oo.time < 60
+                                            select oo.time;
+
+                            Console.WriteLine(itime.ToShortTimeString());
+
+                            if (userdatas.FirstOrDefault() != null)
+                            {
+                                vv = (double)userdatas.FirstOrDefault();
+
+                            }
+                            line.Values.Add(vv);
+
+                            if (itime.TimeOfDay < now.AddMinutes(-chartRangeMinute / 2).TimeOfDay)
+                            {
+                                //totalseconds1 = totalseconds1 + vv;
+                                timesForCulumn1.Add(vv);
+                            }
+                            else
+                            {
+                                //totalseconds2 = totalseconds2 + vv;
+                                timesForCulumn2.Add(vv);
+                            }
                         }
-                        else
+                        if (firstflag)
                         {
-                            //totalseconds2 = totalseconds2 + vv;
-                            timesForCulumn2.Add(vv);
-
+                            lineseries.Add(line);
                         }
+                        //column.Values.Add(totalseconds1);
+                        //column2.Values.Add(totalseconds2);
+                        column.Values.Add(timesForCulumn1.Sum() + 5);
+                        column2.Values.Add(timesForCulumn2.Sum() + 5);
                     }
-                    if (firstflag)
-                    {
-                        lineseries.Add(line);
-                        
-                    }
-                    //column.Values.Add(totalseconds1);
-                    //column2.Values.Add(totalseconds2);
-                    column.Values.Add(timesForCulumn1.Sum()+5);
-                    column2.Values.Add(timesForCulumn2.Sum()+5);
-                    
-
+                    firstflag = false;
+                    //cartesianChart1.Series = series;
+                    columnseries.Add(column);
+                    columnseries.Add(column2);
                 }
-                firstflag = false;
-                //cartesianChart1.Series = series;
-                columnseries.Add(column);
-                columnseries.Add(column2);
+                else
+                {
+                    var data = db.Students;
+                    var users = (from o in data orderby o.username select o.username).Distinct();
+                    //SeriesCollection lineseries = new SeriesCollection();
 
+                    foreach (var user in users)
+                    {
+                        LineSeries line = new LineSeries()
+                        {
+                            Title = user.ToString(),
+                            DataLabels = false,
+                            Values = new ChartValues<double>(),
+                            //Values=userdatas.AsChartValues()
+                        };
+                        //double totalseconds1 = 5;
+                        //double totalseconds2 = 5;
+                        var timesForCulumn1 = new List<double>();
+                        var timesForCulumn2 = new List<double>();
+
+                        for (DateTime itime = now.AddMinutes(-chartRangeMinute); itime < now; itime = itime.AddMinutes(1))
+                        {
+                            double vv = 0;
+                            //var ruleDate = Convert.ToDateTime(itime).TimeOfDay;
+
+                            var userdatas = from oo in data
+                                            where SqlFunctions.DatePart("minute", oo.Date) == SqlFunctions.DatePart("minute", itime)
+                                            && oo.username.Equals(user)
+                                            && SqlFunctions.DatePart("hour", oo.Date) == SqlFunctions.DatePart("hour", itime)
+                                            && oo.time < 60
+                                            select oo.time;
+
+                            Console.WriteLine(itime.ToShortTimeString());
+
+                            if (userdatas.FirstOrDefault() != null)
+                            {
+                                vv = (double)userdatas.FirstOrDefault();
+
+                            }
+                            line.Values.Add(vv);
+
+                            if (itime.TimeOfDay < now.AddMinutes(-chartRangeMinute / 2).TimeOfDay)
+                            {
+                                //totalseconds1 = totalseconds1 + vv;
+                                timesForCulumn1.Add(vv);
+                            }
+                            else
+                            {
+                                //totalseconds2 = totalseconds2 + vv;
+                                timesForCulumn2.Add(vv);
+                            }
+                        }
+                        if (firstflag)
+                        {
+                            lineseries.Add(line);
+                        }
+                        //column.Values.Add(totalseconds1);
+                        //column2.Values.Add(totalseconds2);
+                        column.Values.Add(timesForCulumn1.Sum() + 5);
+                        column2.Values.Add(timesForCulumn2.Sum() + 5);
+                    }
+                    firstflag = false;
+                    //cartesianChart1.Series = series;
+                    columnseries.Add(column);
+                    columnseries.Add(column2);
+                }
             }
             return columnseries;
         }
@@ -270,17 +318,38 @@ namespace livechart
 
             using (WorkshopEntities7 db = new WorkshopEntities7())
             {
-                var data = db.voicerecords;
-                var users = (from o in data orderby o.username select o.username).Distinct();
-
-                foreach (var user in users)
+                if (selectedgroup == "Adults")
                 {
-                    columnlabels.Add(user.ToString());
+                    var data = db.Adults;
+                    var users = (from o in data orderby o.username select o.username).Distinct();
+
+                    foreach (var user in users)
+                    {
+                        columnlabels.Add(user.ToString());
+                    }
+                }else if (selectedgroup == "Students")
+                {
+                    var data = db.Students;
+                    var users = (from o in data orderby o.username select o.username).Distinct();
+
+                    foreach (var user in users)
+                    {
+                        columnlabels.Add(user.ToString());
+                    }
                 }
+                else
+                {
+                    var data = db.voicerecords;
+                    var users = (from o in data orderby o.username select o.username).Distinct();
+
+                    foreach (var user in users)
+                    {
+                        columnlabels.Add(user.ToString());
+                    }
+                }
+
             }
-
             cartesianChart2.Series = columnseries;
-
 
             //using (TestEntities1 db = new TestEntities1())
 
@@ -362,7 +431,6 @@ namespace livechart
 
         private void UpdateLineGraph()
         {
-            
             DateTime now = DateTime.Now;
            
             cartesianChart1.AxisX[0].Labels.Add(now.ToShortTimeString());
@@ -371,50 +439,142 @@ namespace livechart
 
             using (WorkshopEntities7 db=new WorkshopEntities7())
             {
-
-                var data = db.voicerecords;
-                var users = (from o in data orderby o.username select o.username).Distinct();  //fuking retard code
-                int lineCounter = 0;
-
-                if (users.Count() != cartesianChart1.Series.Count()) //in case new one's data added after running ShowLingraph
-                {                                                   //conflict between number of users and number of Series occur
-                    lineseries2.Clear();
-                    GetTableData();
-                    ShowLineGraph();
-                    return;
-                      
-                }
-                
-                foreach (var user in users)
+                if (selectedgroup == "Adults")
                 {
-                    var iValues = cartesianChart1.Series[lineCounter].Values;
-                    double latestvalue = 0;
+                    var data = db.Adults;
+                    var users = (from o in data orderby o.username select o.username).Distinct();  //fuking retard code
+                    int lineCounter = 0;
 
-                    var userdatas = from oo in data
-                                    where oo.username.Equals(user) &&
-                                    (60 * SqlFunctions.DatePart("hour", oo.Date)) + (SqlFunctions.DatePart("minute", oo.Date))
-                                        == (60 * SqlFunctions.DatePart("hour", now)) + (SqlFunctions.DatePart("minute",now))
-                                    && oo.time < 60
-                                    select  new { oo.time,oo.Date };
-
-                    if (userdatas.FirstOrDefault() != null)
-                    {
-                        latestvalue = (double)userdatas.FirstOrDefault().time;
+                    if (users.Count() != cartesianChart1.Series.Count()) //in case new one's data added after running ShowLingraph
+                    {                                                   //conflict between number of users and number of Series occur
+                        lineseries2.Clear();
+                        GetTableData();
+                        ShowLineGraph();
+                        return;
                     }
-                    iValues.Add(latestvalue);
-                    //cartesianChart1.Series[lineCounter].Values.Add(latestvalue);
-                    lineCounter++;
-                    
-                    
 
-                    LineSeries line = new LineSeries()
+                    foreach (var user in users)
                     {
-                        Title = user.ToString(),
-                        DataLabels = false,
-                        Values = iValues,
-                       
-                    };
-                    lineseries2.Add(line);
+                        var iValues = cartesianChart1.Series[lineCounter].Values;
+                        double latestvalue = 0;
+
+                        var userdatas = from oo in data
+                                        where oo.username.Equals(user) &&
+                                        (60 * SqlFunctions.DatePart("hour", oo.Date)) + (SqlFunctions.DatePart("minute", oo.Date))
+                                            == (60 * SqlFunctions.DatePart("hour", now)) + (SqlFunctions.DatePart("minute", now))
+                                        && oo.time < 60
+                                        select new { oo.time, oo.Date };
+
+                        if (userdatas.FirstOrDefault() != null)
+                        {
+                            latestvalue = (double)userdatas.FirstOrDefault().time;
+                        }
+                        iValues.Add(latestvalue);
+                        //cartesianChart1.Series[lineCounter].Values.Add(latestvalue);
+                        lineCounter++;
+
+                        LineSeries line = new LineSeries()
+                        {
+                            Title = user.ToString(),
+                            DataLabels = false,
+                            Values = iValues,
+
+                        };
+                        lineseries2.Add(line);
+
+                    }
+
+                }
+                else if (selectedgroup == "Students")
+                {
+                    var data = db.Students;
+                    var users = (from o in data orderby o.username select o.username).Distinct();  //fuking retard code
+                    int lineCounter = 0;
+
+                    if (users.Count() != cartesianChart1.Series.Count()) //in case new one's data added after running ShowLingraph
+                    {                                                   //conflict between number of users and number of Series occur
+                        lineseries2.Clear();
+                        GetTableData();
+                        ShowLineGraph();
+                        return;
+                    }
+
+                    foreach (var user in users)
+                    {
+                        var iValues = cartesianChart1.Series[lineCounter].Values;
+                        double latestvalue = 0;
+
+                        var userdatas = from oo in data
+                                        where oo.username.Equals(user) &&
+                                        (60 * SqlFunctions.DatePart("hour", oo.Date)) + (SqlFunctions.DatePart("minute", oo.Date))
+                                            == (60 * SqlFunctions.DatePart("hour", now)) + (SqlFunctions.DatePart("minute", now))
+                                        && oo.time < 60
+                                        select new { oo.time, oo.Date };
+
+                        if (userdatas.FirstOrDefault() != null)
+                        {
+                            latestvalue = (double)userdatas.FirstOrDefault().time;
+                        }
+                        iValues.Add(latestvalue);
+                        //cartesianChart1.Series[lineCounter].Values.Add(latestvalue);
+                        lineCounter++;
+
+                        LineSeries line = new LineSeries()
+                        {
+                            Title = user.ToString(),
+                            DataLabels = false,
+                            Values = iValues,
+
+                        };
+                        lineseries2.Add(line);
+
+                    }
+
+                }
+                else
+                {
+                    var data = db.voicerecords;
+                    var users = (from o in data orderby o.username select o.username).Distinct();  //fuking retard code
+                    int lineCounter = 0;
+
+                    if (users.Count() != cartesianChart1.Series.Count()) //in case new one's data added after running ShowLingraph
+                    {                                                   //conflict between number of users and number of Series occur
+                        lineseries2.Clear();
+                        GetTableData();
+                        ShowLineGraph();
+                        return;
+                    }
+
+                    foreach (var user in users)
+                    {
+                        var iValues = cartesianChart1.Series[lineCounter].Values;
+                        double latestvalue = 0;
+
+                        var userdatas = from oo in data
+                                        where oo.username.Equals(user) &&
+                                        (60 * SqlFunctions.DatePart("hour", oo.Date)) + (SqlFunctions.DatePart("minute", oo.Date))
+                                            == (60 * SqlFunctions.DatePart("hour", now)) + (SqlFunctions.DatePart("minute", now))
+                                        && oo.time < 60
+                                        select new { oo.time, oo.Date };
+
+                        if (userdatas.FirstOrDefault() != null)
+                        {
+                            latestvalue = (double)userdatas.FirstOrDefault().time;
+                        }
+                        iValues.Add(latestvalue);
+                        //cartesianChart1.Series[lineCounter].Values.Add(latestvalue);
+                        lineCounter++;
+
+                        LineSeries line = new LineSeries()
+                        {
+                            Title = user.ToString(),
+                            DataLabels = false,
+                            Values = iValues,
+
+                        };
+                        lineseries2.Add(line);
+
+                    }
 
                 }
 
@@ -460,7 +620,7 @@ namespace livechart
            // ShowColumnGraph();
         }
 
-        private async void timer2_Tick(object sender, EventArgs e)    //every
+        private void timer2_Tick(object sender, EventArgs e)    //every
         {
             //columnseries.Clear();
             //cartesianChart2.Series.Clear();

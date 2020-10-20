@@ -94,5 +94,10 @@ namespace livechart
             int index = metroComboBox1.SelectedIndex;
             selectedTable0 = metroComboBox1.Items[index].ToString();
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
