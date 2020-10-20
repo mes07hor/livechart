@@ -25,16 +25,25 @@ namespace livechart
 
     public partial class Form1 : Form
     {
-        public Form1()
+        //contain firstform instance
+        private FirstForm firstformInstance;
+        private string selectedgroup;
+
+        public Form1(FirstForm firstformInstance)
         {
             InitializeComponent();
 
+            this.firstformInstance = firstformInstance;
 
             var ListOfTimeforCulumn1 = new List<List<double>>() { };
             var ListOfTimeforCulumn2 = new List<List<double>>() { };
+            selectedgroup = this.firstformInstance.selectedTable;
+
+            
 
 
         }
+
 
         private static int chartRangeMinute = 60;
         bool firstflag = true;
@@ -123,16 +132,18 @@ namespace livechart
         }
         SeriesCollection lineseries = new SeriesCollection();
 
-        
 
         private SeriesCollection GetTableData()
         {
             SeriesCollection columnseries = new SeriesCollection();
 
+
             DateTime now = DateTime.Now;
             using (WorkshopEntities7 db = new WorkshopEntities7())
             {
-                var data = db.voicerecords;
+                
+                var data = db.Adults;
+               
 
                 var users = (from o in data orderby o.username select o.username).Distinct();
 
@@ -169,8 +180,8 @@ namespace livechart
                     };
 
 
-                    double totalseconds1 = 5;
-                    double totalseconds2 = 5;
+                    //double totalseconds1 = 5;
+                    //double totalseconds2 = 5;
                     
 
                     var timesForCulumn1 = new List<double>();

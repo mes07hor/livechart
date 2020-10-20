@@ -4,7 +4,27 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="WorkshopModel1.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="WorkshopModel1.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--生成中に見つかったエラー:
+警告 6002: テーブル/ビュー 'Workshop.dbo.Adults' には主キーが定義されていません。主キーは推論され、定義は読み取り専用のテーブル/ビューとして作成されました。-->
+        <EntityType Name="Adults">
+          <Key>
+            <PropertyRef Name="Date" />
+          </Key>
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="time" Type="float" />
+          <Property Name="username" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <!--生成中に見つかったエラー:
+警告 6002: テーブル/ビュー 'Workshop.dbo.Students' には主キーが定義されていません。主キーは推論され、定義は読み取り専用のテーブル/ビューとして作成されました。-->
+        <EntityType Name="Students">
+          <Key>
+            <PropertyRef Name="Date" />
+          </Key>
+          <Property Name="Date" Type="datetime" Nullable="false" />
+          <Property Name="time" Type="float" />
+          <Property Name="username" Type="nvarchar" MaxLength="50" />
+        </EntityType>
         <!--生成中に見つかったエラー:
 警告 6002: テーブル/ビュー 'Workshop.dbo.voicerecord' には主キーが定義されていません。主キーは推論され、定義は読み取り専用のテーブル/ビューとして作成されました。-->
         <EntityType Name="voicerecord">
@@ -16,6 +36,20 @@
           <Property Name="username" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityContainer Name="WorkshopModel1StoreContainer">
+          <EntitySet Name="Adults" EntityType="Self.Adults" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Adults].[Date] AS [Date], 
+    [Adults].[time] AS [time], 
+    [Adults].[username] AS [username]
+    FROM [dbo].[Adults] AS [Adults]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Students" EntityType="Self.Students" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Students].[Date] AS [Date], 
+    [Students].[time] AS [time], 
+    [Students].[username] AS [username]
+    FROM [dbo].[Students] AS [Students]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="voicerecord" EntityType="Self.voicerecord" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [voicerecord].[Date] AS [Date], 
@@ -24,8 +58,7 @@
     FROM [dbo].[voicerecord] AS [voicerecord]</DefiningQuery>
           </EntitySet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="WorkshopModel1" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -39,7 +72,25 @@
         </EntityType>
         <EntityContainer Name="WorkshopEntities7" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="voicerecords" EntityType="Self.voicerecord" />
+          <EntitySet Name="Adults" EntityType="WorkshopModel1.Adult" />
+          <EntitySet Name="Students" EntityType="WorkshopModel1.Student" />
         </EntityContainer>
+        <EntityType Name="Adult">
+          <Key>
+            <PropertyRef Name="Date" />
+          </Key>
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="time" Type="Double" />
+          <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="Student">
+          <Key>
+            <PropertyRef Name="Date" />
+          </Key>
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="time" Type="Double" />
+          <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -52,6 +103,24 @@
                 <ScalarProperty Name="Date" ColumnName="Date" />
                 <ScalarProperty Name="time" ColumnName="time" />
                 <ScalarProperty Name="username" ColumnName="username" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Adults">
+            <EntityTypeMapping TypeName="WorkshopModel1.Adult">
+              <MappingFragment StoreEntitySet="Adults">
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="time" ColumnName="time" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Students">
+            <EntityTypeMapping TypeName="WorkshopModel1.Student">
+              <MappingFragment StoreEntitySet="Students">
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="time" ColumnName="time" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

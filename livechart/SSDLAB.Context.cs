@@ -26,5 +26,7 @@ namespace livechart
         }
     
         public virtual DbSet<voicerecord> voicerecords { get; set; }
+        public virtual DbSet<Adult> Adults { get; set; }
+        public virtual DbSet<Student> Students { get; set; }
     }
 }
