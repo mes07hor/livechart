@@ -6,6 +6,8 @@
     <edmx:Diagrams>
       <Diagram DiagramId="4c35f6fedfad4ed7835eff030a449c12" Name="Diagram1">
         <EntityTypeShape EntityType="WorkshopModel1.voicerecord" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="WorkshopModel1.Adult" Width="1.5" PointX="3.75" PointY="0.75" />
+        <EntityTypeShape EntityType="WorkshopModel1.Student" Width="1.5" PointX="0.75" PointY="3.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

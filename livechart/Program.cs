@@ -17,12 +17,14 @@ namespace livechart
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            FirstForm FirstForm = new FirstForm();
+            Application.Run(FirstForm);
 
-            Form1 mainForm = new Form1();
+            //Form1 mainForm = new Form1();
             //SplashForm.ShowSplash(new Form1());
             //Application.Run(new Form1());
-            SplashForm.ShowSplash(mainForm);
-            Application.Run(mainForm);
+            //SplashForm.ShowSplash(mainForm);
+            //Application.Run(mainForm);
         }
     }
 }
