@@ -22,9 +22,10 @@ namespace livechart
         {
             GetTableCatalog();
             metroComboBox1.DataSource = TableCatalog;
+            
 
         }
-        
+
 
         //SQL to get table catalog
         private static readonly string SelectTableListSql = "SELECT * FROM sys.objects where type='U'";
@@ -81,9 +82,22 @@ namespace livechart
 
         private void metroButton1_Click(object sender, EventArgs e)
         {
-            var chartform = new Form1(this);
-            SplashForm.ShowSplash(chartform);
-            chartform.Show();
+            if (radioButton_facilitator.Checked == true)
+            {
+                var chartform = new Form1(this);
+                SplashForm.ShowSplash(chartform);
+                chartform.Show();
+            }
+            else if (radioButton_organizer.Checked == true)
+            {
+                var chartform = new OrganizerForm(this);
+                SplashForm.ShowSplash(chartform);
+                chartform.Show();
+            }
+            else
+            {
+
+            }
             
         }
         public static string selectedTable0;
