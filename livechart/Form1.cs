@@ -592,6 +592,7 @@ namespace livechart
         {
 
             //this.pictureBox1.Visible = true;
+            
 
             this.backgroundWorker1.RunWorkerAsync();
 
