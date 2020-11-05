@@ -20,6 +20,7 @@ using LiveCharts.Helpers;
 using System.Threading;
 using System.Windows.Threading;
 using System.Data.SqlClient;
+using System.Net;
 
 namespace livechart
 {
@@ -563,5 +564,14 @@ namespace livechart
             ShowColumnGraph(GetTableData());
 
         }
+
+        private void getDatafromMiro()
+        {
+            string url = "https://api.miro.com/v1/users/me?access_token=a76c74ac-256e-455d-ba1b-2d06b801f830";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "GET";
+            HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+        }
+
     }
 }
