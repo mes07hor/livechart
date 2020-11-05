@@ -106,9 +106,12 @@ namespace livechart
 
             using (WorkshopEntities7 db = new WorkshopEntities7())
             {
+                
                 if (selectedgroup == "Adults")
                 {
+                    
                     var data = db.Adults;
+                    
                     var users = (from o in data orderby o.username select o.username).Distinct();
                     //SeriesCollection lineseries = new SeriesCollection();
 
@@ -539,6 +542,7 @@ namespace livechart
         private void OrganizerForm_Load_1(object sender, EventArgs e)
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
+            this.MinimumSize = this.Size;
             ShowColumnGraph(GetTableData());
 
             ShowLineGraph();
