@@ -14,6 +14,7 @@
           <Property Name="Date" Type="datetime" Nullable="false" />
           <Property Name="time" Type="float" />
           <Property Name="username" Type="nvarchar" MaxLength="50" />
+          <Property Name="selectedgroup" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--生成中に見つかったエラー:
 警告 6002: テーブル/ビュー 'Workshop.dbo.Students' には主キーが定義されていません。主キーは推論され、定義は読み取り専用のテーブル/ビューとして作成されました。-->
@@ -24,6 +25,7 @@
           <Property Name="Date" Type="datetime" Nullable="false" />
           <Property Name="time" Type="float" />
           <Property Name="username" Type="nvarchar" MaxLength="50" />
+          <Property Name="selectedgroup" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <!--生成中に見つかったエラー:
 警告 6002: テーブル/ビュー 'Workshop.dbo.voicerecord' には主キーが定義されていません。主キーは推論され、定義は読み取り専用のテーブル/ビューとして作成されました。-->
@@ -40,14 +42,16 @@
             <DefiningQuery>SELECT 
     [Adults].[Date] AS [Date], 
     [Adults].[time] AS [time], 
-    [Adults].[username] AS [username]
+    [Adults].[username] AS [username], 
+    [Adults].[selectedgroup] AS [selectedgroup]
     FROM [dbo].[Adults] AS [Adults]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="Students" EntityType="Self.Students" store:Type="Tables" store:Schema="dbo">
             <DefiningQuery>SELECT 
     [Students].[Date] AS [Date], 
     [Students].[time] AS [time], 
-    [Students].[username] AS [username]
+    [Students].[username] AS [username], 
+    [Students].[selectedgroup] AS [selectedgroup]
     FROM [dbo].[Students] AS [Students]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="voicerecord" EntityType="Self.voicerecord" store:Type="Tables" store:Schema="dbo">
@@ -82,6 +86,7 @@
           <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="time" Type="Double" />
           <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="selectedgroup" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Student">
           <Key>
@@ -90,6 +95,7 @@
           <Property Name="Date" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="time" Type="Double" />
           <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="selectedgroup" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -109,6 +115,7 @@
           <EntitySetMapping Name="Adults">
             <EntityTypeMapping TypeName="WorkshopModel1.Adult">
               <MappingFragment StoreEntitySet="Adults">
+                <ScalarProperty Name="selectedgroup" ColumnName="selectedgroup" />
                 <ScalarProperty Name="username" ColumnName="username" />
                 <ScalarProperty Name="time" ColumnName="time" />
                 <ScalarProperty Name="Date" ColumnName="Date" />
@@ -118,6 +125,7 @@
           <EntitySetMapping Name="Students">
             <EntityTypeMapping TypeName="WorkshopModel1.Student">
               <MappingFragment StoreEntitySet="Students">
+                <ScalarProperty Name="selectedgroup" ColumnName="selectedgroup" />
                 <ScalarProperty Name="username" ColumnName="username" />
                 <ScalarProperty Name="time" ColumnName="time" />
                 <ScalarProperty Name="Date" ColumnName="Date" />

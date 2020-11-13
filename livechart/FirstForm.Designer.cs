@@ -46,7 +46,7 @@
             this.metroComboBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.metroComboBox1.Name = "metroComboBox1";
             this.metroComboBox1.Size = new System.Drawing.Size(180, 29);
-            this.metroComboBox1.Style = MetroFramework.MetroColorStyle.Purple;
+            this.metroComboBox1.Style = MetroFramework.MetroColorStyle.Blue;
             this.metroComboBox1.TabIndex = 0;
             this.metroComboBox1.Theme = MetroFramework.MetroThemeStyle.Light;
             this.metroComboBox1.UseSelectable = true;
@@ -83,7 +83,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Dubai", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(100, 19);
+            this.label2.Location = new System.Drawing.Point(112, 19);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(228, 49);
@@ -94,25 +94,34 @@
             // 
             this.radioButton_facilitator.Appearance = System.Windows.Forms.Appearance.Button;
             this.radioButton_facilitator.AutoSize = true;
+            this.radioButton_facilitator.BackColor = System.Drawing.Color.Gainsboro;
+            this.radioButton_facilitator.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
+            this.radioButton_facilitator.FlatAppearance.CheckedBackColor = System.Drawing.Color.MediumSlateBlue;
+            this.radioButton_facilitator.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.radioButton_facilitator.Location = new System.Drawing.Point(109, 80);
             this.radioButton_facilitator.Name = "radioButton_facilitator";
-            this.radioButton_facilitator.Size = new System.Drawing.Size(92, 29);
+            this.radioButton_facilitator.Size = new System.Drawing.Size(94, 31);
             this.radioButton_facilitator.TabIndex = 5;
             this.radioButton_facilitator.TabStop = true;
             this.radioButton_facilitator.Text = "Facilitator";
-            this.radioButton_facilitator.UseVisualStyleBackColor = true;
+            this.radioButton_facilitator.UseVisualStyleBackColor = false;
             // 
             // radioButton_organizer
             // 
             this.radioButton_organizer.Appearance = System.Windows.Forms.Appearance.Button;
             this.radioButton_organizer.AutoSize = true;
-            this.radioButton_organizer.Location = new System.Drawing.Point(238, 80);
+            this.radioButton_organizer.BackColor = System.Drawing.SystemColors.Control;
+            this.radioButton_organizer.CheckAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.radioButton_organizer.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.radioButton_organizer.FlatAppearance.CheckedBackColor = System.Drawing.Color.MediumSlateBlue;
+            this.radioButton_organizer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.radioButton_organizer.Location = new System.Drawing.Point(248, 80);
             this.radioButton_organizer.Name = "radioButton_organizer";
-            this.radioButton_organizer.Size = new System.Drawing.Size(90, 29);
+            this.radioButton_organizer.Size = new System.Drawing.Size(92, 31);
             this.radioButton_organizer.TabIndex = 6;
             this.radioButton_organizer.TabStop = true;
             this.radioButton_organizer.Text = "Organizer";
-            this.radioButton_organizer.UseVisualStyleBackColor = true;
+            this.radioButton_organizer.UseVisualStyleBackColor = false;
             // 
             // FirstForm
             // 

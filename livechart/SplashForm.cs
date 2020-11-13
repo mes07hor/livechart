@@ -195,5 +195,15 @@ namespace livechart
                 splashShownEvent.Set();
             }
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SplashForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

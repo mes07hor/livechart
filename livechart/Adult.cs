@@ -17,5 +17,6 @@ namespace livechart
         public System.DateTime Date { get; set; }
         public Nullable<double> time { get; set; }
         public string username { get; set; }
+        public string selectedgroup { get; set; }
     }
 }

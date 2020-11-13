@@ -20,9 +20,14 @@ namespace livechart
 
         private void FirstForm_Load(object sender, EventArgs e)
         {
-            GetTableCatalog();
-            metroComboBox1.DataSource = TableCatalog;
-            
+            //GetTableCatalog();
+            //metroComboBox1.DataSource = TableCatalog;
+            metroComboBox1.Items.Add("Adults1");
+            metroComboBox1.Items.Add("Adults2");
+            metroComboBox1.Items.Add("Students1");
+            metroComboBox1.Items.Add("Students2");
+            metroComboBox1.Items.Add("voicerecord");
+
 
         }
 

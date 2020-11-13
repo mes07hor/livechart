@@ -54,6 +54,7 @@
             this.label1.Size = new System.Drawing.Size(476, 108);
             this.label1.TabIndex = 1;
             this.label1.Text = "Loading Charts...";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // SplashForm
             // 
@@ -69,6 +70,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SplashForm";
+            this.Load += new System.EventHandler(this.SplashForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
