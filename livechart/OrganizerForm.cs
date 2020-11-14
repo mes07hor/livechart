@@ -42,6 +42,7 @@ namespace livechart
 
             var ListOfTimeforCulumn1 = new List<List<double>>() { };
             var ListOfTimeforCulumn2 = new List<List<double>>() { };
+            var ListOfSticker = new List<List<int>>() { };
             selectedgroup = this.firstformInstance.selectedTable;
             Console.WriteLine(selectedgroup);
             
@@ -91,7 +92,7 @@ namespace livechart
             DateTime now = DateTime.Now;
             ColumnSeries column = new ColumnSeries()
             {
-                Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
+                Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～\n" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
 
                 DataLabels = false,
                 Values = new ChartValues<double>(),
@@ -100,7 +101,7 @@ namespace livechart
             };
             ColumnSeries column2 = new ColumnSeries()
             {
-                Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～" + now.ToShortTimeString(),
+                Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～\n" + now.ToShortTimeString(),
 
                 DataLabels = false,
                 Values = new ChartValues<double>(),
@@ -110,9 +111,7 @@ namespace livechart
             
             using (WorkshopEntities7 db = new WorkshopEntities7())
             {
-               
-                
-                
+                            
                 if (selectedgroup == "Adults1"||selectedgroup == "Adults2")
                 {
                     
@@ -121,6 +120,7 @@ namespace livechart
                     var users = (from o in data
                                  where o.selectedgroup==selectedgroup 
                                  && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username != "ファシリテータ" && o.username != "ファシリテーター"&&o.username!="test3"
                                  orderby o.username select o.username).Distinct();
                     //SeriesCollection lineseries = new SeriesCollection();
 
@@ -159,6 +159,8 @@ namespace livechart
                                             && SqlFunctions.DatePart("hour", oo.Date) == SqlFunctions.DatePart("hour", itime)
                                             && oo.selectedgroup == selectedgroup
                                             && SqlFunctions.DatePart("day", oo.Date) == SqlFunctions.DatePart("day", now)
+                                            && oo.username != "ファシリテータ" && oo.username != "ファシリテーター" 
+
                                             //&& oo.time < 60
                                             select oo.time;
                                             
@@ -212,10 +214,14 @@ namespace livechart
                     columnseries.Add(column);
                     columnseries.Add(column2);
                 }
-                else
+                else if(selectedgroup == "Students1" || selectedgroup == "Students2")
                 {
                     var data = db.Students;
-                    var users = (from o in data orderby o.username select o.username).Distinct();
+                    var users = (from o in data
+                                 where o.selectedgroup == selectedgroup
+                                 && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username != "ファシリテータ" && o.username != "ファシリテーター"
+                                 orderby o.username select o.username).Distinct();
                     //SeriesCollection lineseries = new SeriesCollection();
 
                     foreach (var user in users)
@@ -241,7 +247,9 @@ namespace livechart
                                             where SqlFunctions.DatePart("minute", oo.Date) == SqlFunctions.DatePart("minute", itime)
                                             && oo.username.Equals(user)
                                             && SqlFunctions.DatePart("hour", oo.Date) == SqlFunctions.DatePart("hour", itime)
-                                            && oo.time < 60
+                                            && oo.selectedgroup == selectedgroup
+                                            //&& SqlFunctions.DatePart("day", oo.Date) == SqlFunctions.DatePart("day", now)
+                                            //&& oo.time < 60
                                             select oo.time;
 
                             Console.WriteLine(itime.ToShortTimeString());
@@ -279,6 +287,7 @@ namespace livechart
                     columnseries.Add(column2);
                 }
             }
+            firstLoadflag = false;
             return columnseries;
         }
 
@@ -307,12 +316,13 @@ namespace livechart
 
             using (WorkshopEntities7 db = new WorkshopEntities7())
             {
-                if (selectedgroup == "Adults1"|| selectedgroup == "Adults1")
+                if (selectedgroup == "Adults1"|| selectedgroup == "Adults2")
                 {
                     var data = db.Adults;
                     var users = (from o in data
                                  where o.selectedgroup == selectedgroup
                                  && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username!="ファシリテータ"&&o.username!="ファシリテーター" 
                                  orderby o.username select o.username).Distinct();
 
                     foreach (var user in users)
@@ -320,10 +330,14 @@ namespace livechart
                         columnlabels.Add(user.ToString());
                     }
                 }
-                else if (selectedgroup == "Students")
+                else if (selectedgroup == "Students1" || selectedgroup == "Students2")
                 {
                     var data = db.Students;
-                    var users = (from o in data orderby o.username select o.username).Distinct();
+                    var users = (from o in data
+                                 where o.selectedgroup == selectedgroup
+                                 && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username != "ファシリテータ" && o.username != "ファシリテーター"
+                                 orderby o.username select o.username).Distinct();
 
                     foreach (var user in users)
                     {
@@ -343,9 +357,6 @@ namespace livechart
 
             }
             cartesianChart2.Series = columnseries;
-
-            
-
             
         }
 
@@ -365,6 +376,7 @@ namespace livechart
                         var users = (from o in data
                                      where o.selectedgroup == selectedgroup
                                      && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                     && o.username != "ファシリテータ" && o.username != "ファシリテーター" 
                                      orderby o.username select o.username).Distinct();  //fuking retard code
                         int lineCounter = 0;
 
@@ -410,10 +422,13 @@ namespace livechart
                         }
 
                     }
-                    else if (selectedgroup == "Students")
+                    else if (selectedgroup == "Students1" || selectedgroup == "Students2")
                     {
                         var data = db.Students;
-                        var users = (from o in data orderby o.username select o.username).Distinct();  //fuking retard code
+                        var users = (from o in data
+                                     where o.selectedgroup == selectedgroup
+                                     && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                     orderby o.username select o.username).Distinct();  //fuking retard code
                         int lineCounter = 0;
 
                         if (users.Count() != cartesianChart1.Series.Count()) //in case new one's data added after running ShowLingraph
@@ -433,6 +448,8 @@ namespace livechart
                                             where oo.username.Equals(user) &&
                                             (60 * SqlFunctions.DatePart("hour", oo.Date)) + (SqlFunctions.DatePart("minute", oo.Date))
                                                 == (60 * SqlFunctions.DatePart("hour", now)) + (SqlFunctions.DatePart("minute", now))
+                                            && oo.selectedgroup == selectedgroup
+                                            && SqlFunctions.DatePart("day", oo.Date) == SqlFunctions.DatePart("day", now)
                                             && oo.time < 60
                                             select new { oo.time, oo.Date };
 
@@ -603,25 +620,36 @@ namespace livechart
         }
         DataTable dataTable = new DataTable();
 
-
+        bool firstLoadflag = true;
         private void timer1_Tick_1(object sender, EventArgs e)
         {
+            var now = DateTime.Now;
+
             cartesianChart1.DisableAnimations = true;
             cartesianChart2.DisableAnimations = true;
 
-            UpdateLineGraph();
 
+            if (now.Second == 0&&firstLoadflag==false)
+            {
+                UpdateLineGraph();
+                getDatafromMiro(dataTable);
+                if (now.Minute % 2 == 0)
+                {
+                    ShowColumnGraph(GetTableData());
+
+                }
+
+            }
 
             // ShowColumnGraph();
 
-            getDatafromMiro(dataTable);
-            
+
         }
 
         private void timer2_Tick_1(object sender, EventArgs e)
         {
             
-           ShowColumnGraph(GetTableData());
+           //ShowColumnGraph(GetTableData());
             
         }
 
@@ -642,18 +670,37 @@ namespace livechart
 
             for(int j = 0; j < rowCount; j++)
             {
-                metroGrid1.Rows[j].Height =50;
+                metroGrid1.Rows[j].Height =40;
             }
-            metroGrid1.Columns[0].Width = 50;
-            metroGrid1.Columns[1].Width = 50;
-            metroGrid1.Columns[2].Width = 50;
-            metroGrid1.Columns[3].Width = 50;
+            metroGrid1.Columns[0].Width = 40;
+            metroGrid1.Columns[1].Width = 40;
+            metroGrid1.Columns[2].Width = 40;
+            metroGrid1.Columns[3].Width = 40;
 
         }
 
         private  void getDatafromMiro(DataTable dataTable)
         {
-            
+            var now = DateTime.Now;
+            ColumnSeries stickercolumn = new ColumnSeries()
+            {
+                Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
+
+                DataLabels = false,
+                Values = new ChartValues<double>(),
+                //LabelPoint = point => point.Y.ToString()
+
+            };
+            ColumnSeries stickercolumn2 = new ColumnSeries()
+            {
+                Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～" + now.ToShortTimeString(),
+
+                DataLabels = false,
+                Values = new ChartValues<double>(),
+                //LabelPoint = point => point.Y.ToString()
+
+            };
+
             Task getDatafromMiroTask = Task.Run(() =>
             {
                 string url = "https://api.miro.com/v1/boards/o9J_kiyojvo=/widgets/?access_token=a76c74ac-256e-455d-ba1b-2d06b801f830";
@@ -666,56 +713,86 @@ namespace livechart
                 string content = sr.ReadToEnd();
                 sr.Close();
 
-             var mirodata = JsonConvert.DeserializeObject<Root>(content);
-            
+                var mirodata = JsonConvert.DeserializeObject<Root>(content);
 
-            foreach (var item in mirodata.data)
-            {
-                if (item.type == "frame") {
-                    int widgetCount = 0;
+                int whiteWidgetCount = 0;
+                int yellowWidgetCount =0;
+                int redWidgetCount = 0;
+                int greenWidgetCount = 0;
+                int malibuWidgetCount = 0;
 
-                    if (item.title.Length>=5)
-                    {
-                        char c1 = item.title[0];
-                        char c2 = item.title[2];
-                        char c3 = item.title[4];
-                        if (c1 == '[' && c2==',' && c3==']')
+                foreach (var item in mirodata.data)
+                {
+                    if (item.type == "frame") {
+                        int widgetCount = 0;
+
+                        if (item.title.Length>=5)
                         {
-                            Regex re = new Regex(@"[^0-9]");    //extract numbers from string like [1,2], that result in 12
-                            int tmp = int.Parse(re.Replace(item.title, ""));
-                            int rowDigit = tmp / 10;    //2nd digit
-                            int columnDigit = tmp % 10; //1st digit
+                            char c1 = item.title[0];
+                            char c2 = item.title[2];
+                            char c3 = item.title[4];
+                            if (c1 == '[' && c2==',' && c3==']')
+                            {
+                                Regex re = new Regex(@"[^0-9]");    //extract numbers from string like [1,2], that result in 12
+                                int tmp = int.Parse(re.Replace(item.title, ""));
+                                int rowDigit = tmp / 10;    //2nd digit
+                                int columnDigit = tmp % 10; //1st digit
                             
 
-                            foreach (var id in item.children)   //item.children.count sometimes contain unexpected widgets like "line"
-                            {
-                                foreach(var item2 in mirodata.data)
+                                foreach (var id in item.children)   //item.children.count sometimes contain unexpected widgets like "line"
                                 {
-                                    if (item2.id==id && item2.type == "sticker")
+                                    foreach(var item2 in mirodata.data)
                                     {
-                                        widgetCount++;
+                                        if (item2.id==id && item2.type == "sticker")
+                                        {
+                                            widgetCount++;
+                                        }
                                     }
                                 }
+                                dataTable.Rows[rowDigit][columnDigit] = widgetCount;
                             }
-                            dataTable.Rows[rowDigit][columnDigit] = widgetCount;
-                        }
 
+                        }
+                    }else if (item.type == "sticker")
+                    {
+                        switch (item.style.backgroundColor)
+                        {
+                                case "#f5f6f8":
+                                    whiteWidgetCount++;
+                                    break;
+                                case "#fff9b1":
+                                    yellowWidgetCount++;
+                                    break;
+                                case "#f16c7f":
+                                    redWidgetCount++;
+                                    break;
+                                case "#d5f692":
+                                    greenWidgetCount++;
+                                    break;
+                                case "#6cd8fa":
+                                    malibuWidgetCount++;
+                                    break;
+                        }
                     }
-                }
                 
-            }
+                
+                }
+            
             });
+
+            
             metroGrid1.DataSource= dataTable;
             //metroGrid1.DefaultCellStyle.Font = new Font("Tahoma", 15);
             metroGrid1.CellBorderStyle = DataGridViewCellBorderStyle.Single;
             metroGrid1.GridColor = Color.White;
             metroGrid1.SelectionMode = DataGridViewSelectionMode.CellSelect;
             //metroGrid1.AutoResizeColumns();
-            //metroGrid1.AutoResizeRows();
-            
+            //metroGrid1.AutoResizeRows();            
             //metroGrid1.Update();
-            
+         
         }
+
+        
 
         private void metroGrid1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {

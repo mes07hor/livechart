@@ -157,10 +157,14 @@ namespace livechart
 
             using (WorkshopEntities7 db = new WorkshopEntities7())
             {
-                if (selectedgroup == "Adults")
+                if (selectedgroup == "Adults1"||selectedgroup=="Adults2")
                 {
                     var data = db.Adults;
-                    var users = (from o in data orderby o.username select o.username).Distinct();
+                    var users = (from o in data
+                                 where o.selectedgroup == selectedgroup
+                                 && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username != "ファシリテータ" && o.username != "ファシリテーター"
+                                 orderby o.username select o.username).Distinct();
                     //SeriesCollection lineseries = new SeriesCollection();
 
                     foreach (var user in users)
@@ -223,10 +227,14 @@ namespace livechart
                     columnseries.Add(column);
                     columnseries.Add(column2);
                 }
-                else
+                else if(selectedgroup=="Students1"||selectedgroup=="Students2")
                 {
                     var data = db.Students;
-                    var users = (from o in data orderby o.username select o.username).Distinct();
+                    var users = (from o in data
+                                 where o.selectedgroup == selectedgroup
+                                 && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username != "ファシリテータ" && o.username != "ファシリテーター"
+                                 orderby o.username select o.username).Distinct();
                     //SeriesCollection lineseries = new SeriesCollection();
 
                     foreach (var user in users)
@@ -318,19 +326,27 @@ namespace livechart
 
             using (WorkshopEntities7 db = new WorkshopEntities7())
             {
-                if (selectedgroup == "Adults")
+                if (selectedgroup == "Adults1"||selectedgroup=="Adults2")
                 {
                     var data = db.Adults;
-                    var users = (from o in data orderby o.username select o.username).Distinct();
+                    var users = (from o in data
+                                 where o.selectedgroup == selectedgroup
+                                 && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username != "ファシリテータ" && o.username != "ファシリテーター"
+                                 orderby o.username select o.username).Distinct();
 
                     foreach (var user in users)
                     {
                         columnlabels.Add(user.ToString());
                     }
-                }else if (selectedgroup == "Students")
+                }else if (selectedgroup == "Students1"||selectedgroup=="Students2")
                 {
                     var data = db.Students;
-                    var users = (from o in data orderby o.username select o.username).Distinct();
+                    var users = (from o in data
+                                 where o.selectedgroup == selectedgroup
+                                 && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username != "ファシリテータ" && o.username != "ファシリテーター"
+                                 orderby o.username select o.username).Distinct();
 
                     foreach (var user in users)
                     {
@@ -439,10 +455,14 @@ namespace livechart
 
             using (WorkshopEntities7 db=new WorkshopEntities7())
             {
-                if (selectedgroup == "Adults")
+                if (selectedgroup == "Adults1"||selectedgroup=="Adults2")
                 {
                     var data = db.Adults;
-                    var users = (from o in data orderby o.username select o.username).Distinct();  //fuking retard code
+                    var users = (from o in data
+                                 where o.selectedgroup == selectedgroup
+                                 && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username != "ファシリテータ" && o.username != "ファシリテーター"
+                                 orderby o.username select o.username).Distinct();  //fuking retard code
                     int lineCounter = 0;
 
                     if (users.Count() != cartesianChart1.Series.Count()) //in case new one's data added after running ShowLingraph
@@ -485,10 +505,14 @@ namespace livechart
                     }
 
                 }
-                else if (selectedgroup == "Students")
+                else if (selectedgroup == "Students1"||selectedgroup=="Students2")
                 {
                     var data = db.Students;
-                    var users = (from o in data orderby o.username select o.username).Distinct();  //fuking retard code
+                    var users = (from o in data
+                                 where o.selectedgroup == selectedgroup
+                                 && SqlFunctions.DatePart("day", o.Date) == SqlFunctions.DatePart("day", now)
+                                 && o.username != "ファシリテータ" && o.username != "ファシリテーター"
+                                 orderby o.username select o.username).Distinct();  //fuking retard code
                     int lineCounter = 0;
 
                     if (users.Count() != cartesianChart1.Series.Count()) //in case new one's data added after running ShowLingraph
