@@ -19,6 +19,10 @@ using System.Data.Entity.SqlServer;
 using LiveCharts.Helpers;
 using System.Threading;
 using System.Windows.Threading;
+using System.Net;
+using System.IO;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace livechart
 {
@@ -138,7 +142,7 @@ namespace livechart
             DateTime now = DateTime.Now;
             ColumnSeries column = new ColumnSeries()
             {
-                Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
+                Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～\n" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
 
                 DataLabels = false,
                 Values = new ChartValues<double>(),
@@ -147,7 +151,7 @@ namespace livechart
             };
             ColumnSeries column2 = new ColumnSeries()
             {
-                Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～" + now.ToShortTimeString(),
+                Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～\n" + now.ToShortTimeString(),
 
                 DataLabels = false,
                 Values = new ChartValues<double>(),
@@ -623,6 +627,7 @@ namespace livechart
 
             _dispatcher = Dispatcher.CurrentDispatcher;
             ShowColumnGraph(GetTableData());
+            ShowColumnGraphforSticker(getDatafromMiro());
 
             ShowLineGraph();
 
@@ -641,8 +646,9 @@ namespace livechart
         {
             cartesianChart1.DisableAnimations = true;
             cartesianChart2.DisableAnimations = true;
-
+            ShowColumnGraphforSticker(getDatafromMiro());
             UpdateLineGraph();
+            
            // ShowColumnGraph();
         }
 
@@ -660,6 +666,269 @@ namespace livechart
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             
+        }
+
+        private SeriesCollection getDatafromMiro()
+        {
+            var now = DateTime.Now;
+            SeriesCollection stickerColumnseries = new SeriesCollection();
+
+            cartesianChart3.DisableAnimations = true;
+
+
+            ColumnSeries stickercolumn2 = new ColumnSeries()
+            {
+                Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～\n" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
+
+                DataLabels = false,
+                Values = new ChartValues<int>(),
+                //LabelPoint = point => point.Y.ToString()
+
+            };
+            ColumnSeries stickercolumn = new ColumnSeries()
+            {
+                Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～\n" + now.ToShortTimeString(),
+
+                DataLabels = false,
+                Values = new ChartValues<int>(),
+                //LabelPoint = point => point.Y.ToString()
+
+            };
+
+            Task getDatafromMiroTask = Task.Run(() =>
+            {
+                string boardID = "o9J_kiyojvo=";
+                if (selectedgroup == "Adults1")
+                {
+                    boardID = "o9J_lcv3i5Y=";   //I have to make this part editable without coding by user
+                }
+                else if (selectedgroup == "Students1")
+                {
+                    boardID = "o9J_lcvhh7c=";
+                }
+
+                string url = "https://api.miro.com/v1/boards/" + boardID + "/widgets/?access_token=a76c74ac-256e-455d-ba1b-2d06b801f830";
+
+
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "GET";
+                HttpWebResponse res = (HttpWebResponse)req.GetResponse();
+
+                Stream s = res.GetResponseStream();
+                StreamReader sr = new StreamReader(s);
+                string content = sr.ReadToEnd();
+                sr.Close();
+
+                var mirodata = JsonConvert.DeserializeObject<Root>(content);
+
+                int whiteWidgetCount = 0;
+                int yellowWidgetCount = 0;
+                int redWidgetCount = 0;
+                int greenWidgetCount = 0;
+                int malibuWidgetCount = 0;
+
+                int whiteWidgetCount2 = 0;
+                int yellowWidgetCount2 = 0;
+                int redWidgetCount2 = 0;
+                int greenWidgetCount2 = 0;
+                int malibuWidgetCount2 = 0;
+
+                foreach (var item in mirodata.data)
+                {
+                    
+                    if (item.type == "sticker" && item.modifiedAt.ToLocalTime() > now.AddMinutes(-30))
+                    {
+                        switch (item.style.backgroundColor)
+                        {
+                            case "#f5f6f8":
+                                whiteWidgetCount++;
+                                break;
+                            case "#fff9b1":
+                                yellowWidgetCount++;
+                                break;
+                            case "#f16c7f":
+                                redWidgetCount++;
+                                break;
+                            case "#d5f692":
+                                greenWidgetCount++;
+                                break;
+                            case "#6cd8fa":
+                                malibuWidgetCount++;
+                                break;
+                        }
+                    }
+                    else if (item.type == "sticker" && item.modifiedAt.ToLocalTime() > now.AddMinutes(-60) && item.modifiedAt.ToLocalTime() < now.AddMinutes(-30))
+                    {
+                        switch (item.style.backgroundColor)
+                        {
+                            case "#f5f6f8":
+                                whiteWidgetCount2++;
+                                break;
+                            case "#fff9b1":
+                                yellowWidgetCount2++;
+                                break;
+                            case "#f16c7f":
+                                redWidgetCount2++;
+                                break;
+                            case "#d5f692":
+                                greenWidgetCount2++;
+                                break;
+                            case "#6cd8fa":
+                                malibuWidgetCount2++;
+                                break;
+                        }
+                    }
+
+
+                }
+                stickercolumn.Values.Add(whiteWidgetCount);
+                stickercolumn.Values.Add(yellowWidgetCount);
+                stickercolumn.Values.Add(redWidgetCount);
+                stickercolumn.Values.Add(greenWidgetCount);
+                stickercolumn.Values.Add(malibuWidgetCount);
+
+                stickercolumn2.Values.Add(whiteWidgetCount2);
+                stickercolumn2.Values.Add(yellowWidgetCount2);
+                stickercolumn2.Values.Add(redWidgetCount2);
+                stickercolumn2.Values.Add(greenWidgetCount2);
+                stickercolumn2.Values.Add(malibuWidgetCount2);
+
+
+                stickerColumnseries.Add(stickercolumn2);
+                stickerColumnseries.Add(stickercolumn);
+            });
+
+            
+            //metroGrid1.AutoResizeColumns();
+            //metroGrid1.AutoResizeRows();            
+            //metroGrid1.Update();
+
+            return stickerColumnseries;
+
+        }
+
+        private void ShowColumnGraphforSticker(SeriesCollection columnseries)
+        {
+            cartesianChart3.AxisX.Clear();
+            cartesianChart3.AxisY.Clear();
+            DateTime now = DateTime.Now;
+            var columnlabels = new List<string>();
+
+            cartesianChart3.AxisX.Add(new LiveCharts.Wpf.Axis
+            {
+                Title = "",
+                Labels = columnlabels,
+                Separator = new Separator // force the separator step to 1, so it always display all labels
+                {
+                    Step = 1,
+                    IsEnabled = false //disable it to make it invisible.
+                }
+
+            });
+
+            cartesianChart3.AxisY.Add(new Axis
+            {
+                Title = "Total Stickers[s]"
+                //LabelFormatter = value => value.ToString(),
+            });
+            cartesianChart3.AxisY[0].MinValue = 0;
+            cartesianChart3.LegendLocation = LiveCharts.LegendLocation.Right;
+
+            string whiteguy = metroTextBox1.Text.ToString();
+            string yellowguy = metroTextBox2.Text.ToString();
+            string redguy = metroTextBox3.Text.ToString();
+            string greenguy = metroTextBox4.Text.ToString();
+            string malibuguy = metroTextBox5.Text.ToString();
+            columnlabels.Add(whiteguy);
+            columnlabels.Add(yellowguy);
+            columnlabels.Add(redguy);
+            columnlabels.Add(greenguy);
+            columnlabels.Add(malibuguy);
+
+            cartesianChart3.Series = columnseries;
+
+        }
+
+
+
+        // following classes define the object data style to deal JSON sent from miro API in C#
+        public class Assignee
+        {
+            public object userId { get; set; }
+        }
+
+        public class Style
+        {
+            public string backgroundColor { get; set; }
+            public int? fontSize { get; set; }
+            public string fontFamily { get; set; }
+            public string textAlign { get; set; }
+            public object padding { get; set; }
+            public object backgroundOpacity { get; set; }
+            public object borderColor { get; set; }
+            public object borderStyle { get; set; }
+            public object borderOpacity { get; set; }
+            public object borderWidth { get; set; }
+            public object textColor { get; set; }
+            public string textAlignVertical { get; set; }
+            public object shapeType { get; set; }
+        }
+
+        public class CreatedBy
+        {
+            public string type { get; set; }
+            public string name { get; set; }
+            public string id { get; set; }
+        }
+
+        public class ModifiedBy
+        {
+            public string type { get; set; }
+            public string name { get; set; }
+            public string id { get; set; }
+        }
+
+        public class Datum
+        {
+            public string id { get; set; }
+            public string type { get; set; }
+            public string title { get; set; }
+            public string description { get; set; }
+            public object date { get; set; }
+            public object card { get; set; }
+            public double x { get; set; }
+            //public int rotation { get; set; }
+            public Assignee assignee { get; set; }
+            public double y { get; set; }
+            public double scale { get; set; }
+            public Style style { get; set; }
+            public DateTime createdAt { get; set; }
+            public CreatedBy createdBy { get; set; }
+            public DateTime modifiedAt { get; set; }
+            public ModifiedBy modifiedBy { get; set; }
+            public List<string> children { get; set; }
+            public double? width { get; set; }
+            public double? height { get; set; }
+            public string frameType { get; set; }
+            public string frameFormat { get; set; }
+            public string text { get; set; }
+        }
+
+        public class Root
+        {
+            public List<Datum> data { get; set; }
+            public int size { get; set; }
+        }
+
+        private void metroTextBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void metroButton1_Click(object sender, EventArgs e)
+        {
+            ShowColumnGraphforSticker(getDatafromMiro());
+
         }
     }
 

@@ -115,6 +115,7 @@ namespace livechart
                 if (selectedgroup == "Adults1"||selectedgroup == "Adults2")
                 {
                     
+                    
                     var data = db.Adults;
                     
                     var users = (from o in data
@@ -303,7 +304,12 @@ namespace livechart
             cartesianChart2.AxisX.Add(new LiveCharts.Wpf.Axis
             {
                 Title = "",
-                Labels = columnlabels
+                Labels = columnlabels,
+                Separator = new Separator // force the separator step to 1, so it always display all labels
+                {
+                    Step = 1,
+                    IsEnabled = false //disable it to make it invisible.
+                }
             });
 
             cartesianChart2.AxisY.Add(new Axis
@@ -358,6 +364,47 @@ namespace livechart
             }
             cartesianChart2.Series = columnseries;
             
+        }
+        private void ShowColumnGraphforSticker(SeriesCollection columnseries)
+        {
+            cartesianChart3.AxisX.Clear();
+            cartesianChart3.AxisY.Clear();
+            DateTime now = DateTime.Now;
+            var columnlabels = new List<string>();
+
+            cartesianChart3.AxisX.Add(new LiveCharts.Wpf.Axis
+            {
+                Title = "",
+                Labels = columnlabels,
+                Separator = new Separator // force the separator step to 1, so it always display all labels
+                {
+                    Step = 1,
+                    IsEnabled = false //disable it to make it invisible.
+                }
+                
+            });
+
+            cartesianChart3.AxisY.Add(new Axis
+            {
+                Title = "Total Stickers[s]"
+                //LabelFormatter = value => value.ToString(),
+            });
+            cartesianChart3.AxisY[0].MinValue = 0;
+            cartesianChart3.LegendLocation = LiveCharts.LegendLocation.Right;
+
+            string whiteguy = metroTextBox1.Text.ToString();
+            string yellowguy = metroTextBox2.Text.ToString();
+            string redguy = metroTextBox3.Text.ToString();
+            string greenguy = metroTextBox4.Text.ToString() ;
+            string malibuguy = metroTextBox5.Text.ToString();
+            columnlabels.Add(whiteguy);
+            columnlabels.Add(yellowguy);
+            columnlabels.Add(redguy);
+            columnlabels.Add(greenguy);
+            columnlabels.Add(malibuguy);
+
+            cartesianChart3.Series = columnseries;
+
         }
 
         private void UpdateLineGraph()
@@ -556,19 +603,36 @@ namespace livechart
                             {
                                 var name = reader["username"] as string;
                                 var sentence = reader["sentence"] as string;
+                                var selectedgrouptocompare = reader["selectedgroup"] as string;
 
-                                if (sentence != SentenceToCompare)
+
+                                if (sentence != SentenceToCompare&&selectedgroup==selectedgrouptocompare)
                                 {
                                     Label speakername = new Label();
                                     speakername.Text = name;
-                                    flowLayoutPanel1.Controls.Add(speakername);
 
-                                    chat.YouBubble youBubble = new chat.YouBubble();
-                                    youBubble.Body = sentence;
-                                    youBubble.MsgColor = Color.LightGray;
-                                    flowLayoutPanel1.Controls.Add(youBubble);
-                                    flowLayoutPanel1.ScrollControlIntoView(youBubble);
-                                    SentenceToCompare = sentence;
+                                    if (speakername.Text == "ファシリテータ" || speakername.Text == "ファシリテーター")
+                                    {
+                                        var meBubble = new chat.MeBubble();
+                                        meBubble.Body = sentence;
+                                        meBubble.AutoSize =false;
+                                        meBubble.Width = (int)(flowLayoutPanel1.Width);
+                                        meBubble.MsgColor = Color.Blue;
+                                        flowLayoutPanel1.Controls.Add(meBubble);
+                                        flowLayoutPanel1.ScrollControlIntoView(meBubble);
+                                        SentenceToCompare = sentence;
+                                    } else {
+                                        flowLayoutPanel1.Controls.Add(speakername);
+
+                                        chat.YouBubble youBubble = new chat.YouBubble();
+                                        youBubble.Body = sentence;
+                                        //youBubble.AutoSize = true;
+                                        youBubble.Width = (int)(flowLayoutPanel1.Width);
+                                        youBubble.MsgColor = Color.LightGray;
+                                        flowLayoutPanel1.Controls.Add(youBubble);
+                                        flowLayoutPanel1.ScrollControlIntoView(youBubble);
+                                        SentenceToCompare = sentence;
+                                    }
                                 }
 
                             }
@@ -614,7 +678,7 @@ namespace livechart
 
             showDataGrid(dataTable);
 
-            getDatafromMiro(dataTable);
+            ShowColumnGraphforSticker(getDatafromMiro(dataTable));
            
 
         }
@@ -632,7 +696,8 @@ namespace livechart
             if (now.Second == 0&&firstLoadflag==false)
             {
                 UpdateLineGraph();
-                getDatafromMiro(dataTable);
+                ShowColumnGraphforSticker(getDatafromMiro(dataTable));
+
                 if (now.Minute % 2 == 0)
                 {
                     ShowColumnGraph(GetTableData());
@@ -670,40 +735,56 @@ namespace livechart
 
             for(int j = 0; j < rowCount; j++)
             {
-                metroGrid1.Rows[j].Height =40;
+                metroGrid1.Rows[j].Height =50;
             }
-            metroGrid1.Columns[0].Width = 40;
-            metroGrid1.Columns[1].Width = 40;
-            metroGrid1.Columns[2].Width = 40;
-            metroGrid1.Columns[3].Width = 40;
+            metroGrid1.Columns[0].Width = 50;
+            metroGrid1.Columns[1].Width = 50;
+            metroGrid1.Columns[2].Width = 50;
+            metroGrid1.Columns[3].Width = 50;
 
         }
 
-        private  void getDatafromMiro(DataTable dataTable)
+        private  SeriesCollection getDatafromMiro(DataTable dataTable)
         {
             var now = DateTime.Now;
-            ColumnSeries stickercolumn = new ColumnSeries()
+            SeriesCollection stickerColumnseries = new SeriesCollection();
+
+            cartesianChart3.DisableAnimations = true;
+
+
+            ColumnSeries stickercolumn2 = new ColumnSeries()
             {
-                Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
+                Title = now.AddMinutes(-chartRangeMinute).ToShortTimeString() + "～\n" + now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString(),
 
                 DataLabels = false,
-                Values = new ChartValues<double>(),
+                Values = new ChartValues<int>(),
                 //LabelPoint = point => point.Y.ToString()
 
             };
-            ColumnSeries stickercolumn2 = new ColumnSeries()
+            ColumnSeries stickercolumn = new ColumnSeries()
             {
-                Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～" + now.ToShortTimeString(),
+                Title = now.AddMinutes(-chartRangeMinute / 2).ToShortTimeString() + "～\n" + now.ToShortTimeString(),
 
                 DataLabels = false,
-                Values = new ChartValues<double>(),
+                Values = new ChartValues<int>(),
                 //LabelPoint = point => point.Y.ToString()
 
             };
 
             Task getDatafromMiroTask = Task.Run(() =>
             {
-                string url = "https://api.miro.com/v1/boards/o9J_kiyojvo=/widgets/?access_token=a76c74ac-256e-455d-ba1b-2d06b801f830";
+                string boardID = "o9J_kiyojvo=";
+                if (selectedgroup == "Adults1")
+                {
+                    boardID = "o9J_lcv3i5Y=";   //I have to make this part editable without coding by user
+                }else if (selectedgroup == "Students1")
+                {
+                    boardID = "o9J_lcvhh7c=";
+                }
+
+                string url = "https://api.miro.com/v1/boards/"+boardID+"/widgets/?access_token=a76c74ac-256e-455d-ba1b-2d06b801f830";
+
+
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
                 req.Method = "GET";
                 HttpWebResponse res = (HttpWebResponse)req.GetResponse();
@@ -720,6 +801,12 @@ namespace livechart
                 int redWidgetCount = 0;
                 int greenWidgetCount = 0;
                 int malibuWidgetCount = 0;
+
+                int whiteWidgetCount2 = 0;
+                int yellowWidgetCount2 = 0;
+                int redWidgetCount2 = 0;
+                int greenWidgetCount2 = 0;
+                int malibuWidgetCount2 = 0;
 
                 foreach (var item in mirodata.data)
                 {
@@ -753,7 +840,7 @@ namespace livechart
                             }
 
                         }
-                    }else if (item.type == "sticker")
+                    }else if (item.type == "sticker"&&item.modifiedAt.ToLocalTime()>now.AddMinutes(-30))
                     {
                         switch (item.style.backgroundColor)
                         {
@@ -774,10 +861,45 @@ namespace livechart
                                     break;
                         }
                     }
-                
-                
+                    else if (item.type == "sticker" && item.modifiedAt.ToLocalTime() > now.AddMinutes(-60)&&item.modifiedAt.ToLocalTime()<now.AddMinutes(-30))
+                    {
+                        switch (item.style.backgroundColor)
+                        {
+                            case "#f5f6f8":
+                                whiteWidgetCount2++;
+                                break;
+                            case "#fff9b1":
+                                yellowWidgetCount2++;
+                                break;
+                            case "#f16c7f":
+                                redWidgetCount2++;
+                                break;
+                            case "#d5f692":
+                                greenWidgetCount2++;
+                                break;
+                            case "#6cd8fa":
+                                malibuWidgetCount2++;
+                                break;
+                        }
+                    }
+
+
                 }
-            
+                stickercolumn.Values.Add(whiteWidgetCount);
+                stickercolumn.Values.Add(yellowWidgetCount);
+                stickercolumn.Values.Add(redWidgetCount);
+                stickercolumn.Values.Add(greenWidgetCount);
+                stickercolumn.Values.Add(malibuWidgetCount);
+
+                stickercolumn2.Values.Add(whiteWidgetCount2);
+                stickercolumn2.Values.Add(yellowWidgetCount2);
+                stickercolumn2.Values.Add(redWidgetCount2);
+                stickercolumn2.Values.Add(greenWidgetCount2);
+                stickercolumn2.Values.Add(malibuWidgetCount2);
+
+                
+                stickerColumnseries.Add(stickercolumn2);
+                stickerColumnseries.Add(stickercolumn);
             });
 
             
@@ -789,6 +911,8 @@ namespace livechart
             //metroGrid1.AutoResizeColumns();
             //metroGrid1.AutoResizeRows();            
             //metroGrid1.Update();
+
+            return stickerColumnseries;
          
         }
 
@@ -884,6 +1008,21 @@ namespace livechart
         private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
 
+        }
+
+        private void metroTextBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void metroButton1_Click(object sender, EventArgs e)
+        {
+            ShowColumnGraphforSticker(getDatafromMiro(dataTable));
         }
     }
 }
