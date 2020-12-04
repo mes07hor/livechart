@@ -445,6 +445,7 @@ namespace livechart
             
         }
 
+
         private void UpdateLineGraph()
         {
             DateTime now = DateTime.Now;
